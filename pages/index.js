@@ -1,39 +1,10 @@
 import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import React, { useEffect } from "react";
+import { useRouter } from "next/router";
 import appConfig from "../config.json";
 
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: "Open Sans", sans-serif;
-      }
-      /* App fit Height */
-      html,
-      body,
-      #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */
-    `}</style>
-  );
-}
-
 function Title(props) {
-  const Tag = props.tag;
+  const Tag = props.tag || "h1";
   return (
     <>
       <Tag>{props.children}</Tag>
@@ -42,7 +13,7 @@ function Title(props) {
           ${Tag} {
             color: ${appConfig.theme.colors.primary["930"]};
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 900;
           }
         `}
       </style>
@@ -64,20 +35,39 @@ function Title(props) {
 // export default HomePage;
 
 export default function PaginaInicial() {
-  const username = "AIstilli";
+  const [username, setUsername] = React.useState("AIstilli");
+  const roteamento = useRouter();
+  const [githubUser, setGithubUser] = React.useState("");
+
+  const handleUserError = (object) => {
+    object.src = "https://cdn9.pngable.com/t/12/13/21/2Wr32G3nJ6/toy-story.jpg";
+  };
+
+  useEffect(() => {
+    fetch(`https://api.github.com/users/${username}`)
+      .then((resposta) => {
+        if (!resposta.ok) {
+          throw Error("Não foi possível fazer a requisição");
+        }
+        return resposta.json();
+      })
+      .then((data) => {
+        setGithubUser(data);
+      })
+      .catch((erro) => {
+        console.log(erro.message);
+      });
+  });
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          // backgroundColor: appConfig.theme.colors.primary[500],
           backgroundImage:
             "url(https://virtualbackgrounds.site/wp-content/uploads/2020/09/toy-story-andys-room-wallpaper.jpeg)",
-          // "url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           backgroundBlendMode: "multiply",
@@ -104,6 +94,11 @@ export default function PaginaInicial() {
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={function (event) {
+              event.preventDefault();
+              // console.log("Clicou!");
+              roteamento.push("/chat");
+            }}
             styleSheet={{
               display: "flex",
               flexDirection: "column",
@@ -118,6 +113,8 @@ export default function PaginaInicial() {
             <Text
               variant="body3"
               styleSheet={{
+                fontWeight: 700,
+                fontSize: 3,
                 marginBottom: "32px",
                 color: appConfig.theme.colors.primary["930"],
               }}
@@ -126,12 +123,19 @@ export default function PaginaInicial() {
             </Text>
 
             <TextField
+              onChange={function (event) {
+                // Onde está o valor?
+                const valor = event.target.value;
+                //Trocar o valor da variável
+                // através do React e avise quem precisa
+                setUsername(valor);
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
                   textColor: appConfig.theme.colors.primary["945"],
                   mainColor: appConfig.theme.colors.primary["980"],
-                  mainColorHighlight: appConfig.theme.colors.primary[500],
+                  mainColorHighlight: appConfig.theme.colors.primary["945"],
                   backgroundColor: appConfig.theme.colors.primary["960"],
                 },
               }}
@@ -159,7 +163,7 @@ export default function PaginaInicial() {
               maxWidth: "200px",
               padding: "16px",
               backgroundColor: appConfig.theme.colors.primary["980"],
-              border: "1px solid",
+              border: "2px solid",
               borderColor: appConfig.theme.colors.primary["945"],
               borderRadius: "10px",
               flex: 1,
@@ -171,6 +175,7 @@ export default function PaginaInicial() {
                 borderRadius: "50%",
                 marginBottom: "16px",
               }}
+              onError={({ currentTarget }) => handleUserError(currentTarget)}
               src={`https://github.com/${username}.png`}
             />
             <Text
@@ -184,6 +189,51 @@ export default function PaginaInicial() {
             >
               {username}
             </Text>
+            <ul
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <li>
+                <Text
+                  variant="body4"
+                  styleSheet={{ color: appConfig.theme.colors.primary["945"] }}
+                >
+                  {" "}
+                  {githubUser.name}{" "}
+                </Text>
+              </li>
+              <li>
+                <Text
+                  variant="body4"
+                  styleSheet={{ color: appConfig.theme.colors.primary["945"] }}
+                >
+                  {" "}
+                  {githubUser.location}{" "}
+                </Text>
+              </li>
+              <li>
+                <a
+                  variant="body4"
+                  style={{
+                    border: "solid 1px grey",
+                    padding: "0px 5px",
+                    borderRadius: "10px",
+                    textDecoration: "none",
+                    color: appConfig.theme.colors.primary["945"],
+                    backgroundColor: appConfig.theme.colors.primary["960"],
+                    fontSize: "10px",
+                    cursor: "pointer",
+                  }}
+                  href={githubUser.html_url}
+                >
+                  {" "}
+                  Go to Git
+                </a>
+              </li>
+            </ul>
           </Box>
           {/* Photo Area */}
         </Box>
