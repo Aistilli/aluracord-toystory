@@ -35,7 +35,7 @@ function Title(props) {
 // export default HomePage;
 
 export default function PaginaInicial() {
-  const [username, setUsername] = React.useState("AIstilli");
+  const [username, setUsername] = React.useState("");
   const roteamento = useRouter();
   const [githubUser, setGithubUser] = React.useState("");
 
@@ -57,7 +57,7 @@ export default function PaginaInicial() {
       .catch((erro) => {
         console.log(erro.message);
       });
-  });
+  }, [username]);
 
   return (
     <>
@@ -96,6 +96,9 @@ export default function PaginaInicial() {
             as="form"
             onSubmit={function (event) {
               event.preventDefault();
+              if (username === "") {
+                return;
+              }
               // console.log("Clicou!");
               roteamento.push("/chat");
             }}

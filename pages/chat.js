@@ -1,10 +1,34 @@
-import { Box, Button, Text, TextField, Image } from "@skynexui/components";
+import {
+  Box,
+  Button,
+  Text,
+  TextField,
+  Image,
+  Icon,
+} from "@skynexui/components";
 import React from "react";
 import appConfig from "../config.json";
+import { createClient } from "@supabase/supabase-js";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyMTc1NiwiZXhwIjoxOTU4ODk3NzU2fQ.61lt15vaatLpTCFETDjRP32w_5D1Qbfjy2HLkTDORkE";
+const SUPABASE_URL = "https://btcixiwruciyeiivtfip.supabase.co";
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 export default function ChatPage() {
   const [mensagem, setMensagem] = React.useState("");
   const [listaDeMensagens, setListaDeMensagens] = React.useState([]);
+
+  React.useEffect(() => {
+    supabaseClient
+      .from("mensagens")
+      .select("*")
+      .order("id", { ascending: false })
+      .then(({ data }) => {
+        setListaDeMensagens(data);
+      });
+  }, []);
+
   /*
 // Usuário
 - usuário digita no campo textarea
@@ -18,11 +42,18 @@ export default function ChatPage() {
 */
   function handleNovaMensagem(novaMensagem) {
     const mensagem = {
-      id: listaDeMensagens.length,
+      // id: listaDeMensagens.length + 1,
       de: "AIstilli",
       texto: novaMensagem,
     };
-    setListaDeMensagens([mensagem, ...listaDeMensagens]);
+
+    supabaseClient
+      .from("mensagens")
+      .insert([mensagem]) //tem que ser um objeto com os MESMOS CAMPOS que você escreveu no supabase
+      .then(({ data }) => {
+        setListaDeMensagens([data[0], ...listaDeMensagens]);
+      });
+
     setMensagem("");
   }
 
@@ -153,7 +184,7 @@ function MessageList(props) {
     <Box
       tag="ul"
       styleSheet={{
-        overflow: "scroll",
+        overflow: "hidden",
         display: "flex",
         flexDirection: "column-reverse",
         flex: 1,
@@ -189,7 +220,7 @@ function MessageList(props) {
                   display: "inline-block",
                   marginRight: "8px",
                 }}
-                src={`https://github.com/AIstilli.png`}
+                src={`https://github.com/${mensagem.de}.png`}
               />
               <Text
                 tag="strong"
@@ -209,6 +240,29 @@ function MessageList(props) {
               >
                 {new Date().toLocaleDateString()}
               </Text>
+
+              {/* <Icon
+                name={"FaTrash"}
+                styleSheet={{
+                  marginLeft: "15px",
+                  width: "15px",
+                  height: "15px",
+                  color: appConfig.theme.colors.primary["950"],
+                  hover: {
+                    color: "white",
+                  },
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                onClick={(event, id) => {
+                  event.preventDefault();
+                  const apagaElementoDaLista =
+                    props.mensagens.listaDeMensagens.filter(
+                      () => mensagem.id !== id
+                    );
+                  setListaDeMensagens(apagaElementoDaLista);
+                }}
+              /> */}
             </Box>
             {mensagem.texto}
           </Text>
