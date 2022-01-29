@@ -99,8 +99,8 @@ export default function PaginaInicial() {
               if (username === "") {
                 return;
               }
-              // console.log("Clicou!");
-              roteamento.push("/chat");
+              // Leva o nome de usurário na URL
+              roteamento.push(`/chat?username=${username}`);
             }}
             styleSheet={{
               display: "flex",
