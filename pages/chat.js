@@ -12,10 +12,11 @@ import { useRouter } from "next/router";
 import { createClient } from "@supabase/supabase-js";
 import { ButtonSendSticker } from "../src/components/ButtonSendSticker";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const SUPABASE_URL = "https://btcixiwruciyeiivtfip.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzMyMTc1NiwiZXhwIjoxOTU4ODk3NzU2fQ.61lt15vaatLpTCFETDjRP32w_5D1Qbfjy2HLkTDORkE";
 
-const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 function escutaMensagemEmTempoReal(adicionaMensagem) {
   return supabaseClient
