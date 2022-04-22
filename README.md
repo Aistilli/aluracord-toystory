@@ -1,5 +1,5 @@
 # aluracord-toystory
-Projeto criado na Imersão React com a @alura @omariosouto @peas
+Projeto criado na Imersão React e Nextjs com a @alura @omariosouto @peas
 
 Nessa Imersão tivemos aulas durante 5 dias onde aprendemos:<br>
 -Next js<br>
